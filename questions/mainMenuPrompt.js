@@ -1,4 +1,4 @@
-let questions = [
+let mainMenuQuestions = [
     {
         type: 'list',
         name: 'mainMenuSelection',
@@ -15,11 +15,11 @@ let questions = [
             // "Remove Department",
             // "Remove Role", 
             // "Remove Employee", 
-            "Update Employee Role"
+            "Update Employee Role"//,
             // "Update Employee Manager",
             // "View The Total Utilized Budget of a Department"
         ]
     }
 ];
 
-module.exports = questions;
+module.exports = mainMenuQuestions;
