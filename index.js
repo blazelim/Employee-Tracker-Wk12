@@ -64,8 +64,14 @@ async function mainMenuFunc () {
             break;
 
         case "Add a Department":
-            // code block
-            console.log("Add a Department was called");
+            let inquirerDepartment = await inquirer.prompt(createDepartmentQuestions);
+            console.log(inquirerDepartment);
+
+            sql = `INSERT INTO department (name) VALUES (${inquirerDepartment.departmentName})`
+
+            await simpleQuery(sql);
+            // inquirer prompt appears too quickly, need to set artificial delay
+            wait = await waitABit();
             break;
 
         case "Add a Role":
