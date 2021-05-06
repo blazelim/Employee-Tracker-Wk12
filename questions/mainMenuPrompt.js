@@ -1,7 +1,7 @@
 let mainMenuQuestions = [
     {
         type: 'list',
-        name: 'mainMenuSelection',
+        name: 'answer',
         message: 'What would you like to do?',
         choices: [
             "View All Departments", 
@@ -15,9 +15,10 @@ let mainMenuQuestions = [
             // "Remove Department",
             // "Remove Role", 
             // "Remove Employee", 
-            "Update Employee Role"//,
+            "Update Employee Role",
             // "Update Employee Manager",
             // "View The Total Utilized Budget of a Department"
+            "Done"
         ]
     }
 ];
