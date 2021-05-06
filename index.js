@@ -15,7 +15,10 @@ let departmentID = '';
 let splitString = [];
 let inquirerEmployee = [];
 let currentRoles = [];
-let currentManagers = [];
+let currentEmployees = [];
+let empRole = '';
+let roleID = '';
+
 
 function waitABit() {
     return new Promise(resolve => {
@@ -167,7 +170,7 @@ async function mainMenuFunc () {
                 currentRoles.push(resultingArray[i].Roles);
             }
 
-            let empRole = await inquirer.prompt(
+            empRole = await inquirer.prompt(
                 [
                     {
                         type: 'list',
@@ -181,13 +184,13 @@ async function mainMenuFunc () {
             wait = await waitABit();
             
             splitString = empRole.employeeRole.split(' ');
-            let roleID = splitString[0];
+            roleID = splitString[0];
             params.push(roleID)
 
 
 
             resultingArray = []; 
-            currentManagers = [];
+            currentEmployees = [];
 
             db.query(`SELECT concat(employee.id, ' ', employee.first_name, ' ', employee.last_name) AS Manager FROM employee`, (err, rows) => {
                 if (err) {
@@ -201,7 +204,7 @@ async function mainMenuFunc () {
             wait = await waitABit();
 
             for (var i = 0; i < resultingArray.length; i++) {
-                currentManagers.push(resultingArray[i].Manager);
+                currentEmployees.push(resultingArray[i].Manager);
             }
 
             let employeeManager = await inquirer.prompt(
@@ -210,7 +213,7 @@ async function mainMenuFunc () {
                         type: 'list',
                         name: 'Manager',
                         message: "Who is the employee's manager?",
-                        choices: currentManagers
+                        choices: currentEmployees
                     }
                 ]
             )
@@ -228,12 +231,81 @@ async function mainMenuFunc () {
             break;
 
         case "Update Employee Role":
-            // code block
-            console.log("Update Employee Role was called");
+            params = [];
+            resultingArray = []; 
+            currentEmployees = [];
+
+            db.query(`SELECT concat(employee.id, ' ', employee.first_name, ' ', employee.last_name) AS EmployeeList FROM employee`, (err, rows) => {
+                if (err) {
+                    console.log( `error: ${err.message}`);
+                    return;
+                }
+                resultingArray = Object.values(JSON.parse(JSON.stringify(rows)));
+            })
+            wait = await waitABit();
+
+            for (var i = 0; i < resultingArray.length; i++) {
+                currentEmployees.push(resultingArray[i].EmployeeList);
+            }
+
+            let employeeList = await inquirer.prompt(
+                [
+                    {
+                        type: 'list',
+                        name: 'employee',
+                        message: "Which employee do you want to update?",
+                        choices: currentEmployees
+                    }
+                ]
+            )    
+            // inquirer prompt appears too quickly, need to set artificial delay
+            wait = await waitABit();
+
+            splitString = employeeList.employee.split(' ');
+            let employeeID = splitString[0];
+           
+       
+            db.query(`SELECT concat(roles.id, ' ', roles.title) AS Roles FROM roles`, (err, rows) => {
+                if (err) {
+                    console.log( `error: ${err.message}`);
+                    return;
+                }
+                
+                
+                resultingArray = Object.values(JSON.parse(JSON.stringify(rows)));
+            })
+            wait = await waitABit();
+
+            for (var i = 0; i < resultingArray.length; i++) {
+                currentRoles.push(resultingArray[i].Roles);
+            }
+
+            empRole = await inquirer.prompt(
+                [
+                    {
+                        type: 'list',
+                        name: 'employeeRole',
+                        message: "What is the employee's role?",
+                        choices: currentRoles
+                    }
+                ]
+            )
+            // inquirer prompt appears too quickly, need to set artificial delay
+            wait = await waitABit();
+            
+            splitString = empRole.employeeRole.split(' ');
+            roleID = splitString[0];
+            params.push(roleID, employeeID);
+
+            sql = `UPDATE employee SET role_id = ? WHERE id = ?;`
+
+            parameterQuery(sql, params);
+            // inquirer prompt appears too quickly, need to set artificial delay
+            wait = await waitABit();
+
             break;
 
         default:
-            // code block
             console.log(`
             ====================================
             Press 'Ctrl + C' if you want to quit
