@@ -97,7 +97,6 @@ async function mainMenuFunc () {
             let inquirerRole = await inquirer.prompt(createRoleQuestions);
 
             params.push(inquirerRole.roleName, inquirerRole.salary);
-            console.log(params);
 
             currentDepartments = [];
             resultingArray = []; 
@@ -110,7 +109,6 @@ async function mainMenuFunc () {
                 
                 
                 resultingArray = Object.values(JSON.parse(JSON.stringify(rows)));
-                console.log(resultingArray[1].Department);
             })
             wait = await waitABit();
 
@@ -137,6 +135,7 @@ async function mainMenuFunc () {
             params.push(departmentID);
             sql = `INSERT INTO roles (title, salary, department_id) VALUES (?,?,?);`
             parameterQuery(sql, params);
+            wait = await waitABit();
             break;
 
         case "Add an Employee":
