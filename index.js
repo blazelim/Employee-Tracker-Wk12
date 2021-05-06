@@ -4,6 +4,7 @@ const createDepartmentQuestions = require('./questions/addDepartmentPrompt')
 const createRoleQuestions = require('./questions/addRolePrompt');
 const inquirer = require('inquirer');
 const db = require('./db/connection');
+const createEmployeeQuestions = require('./questions/addEmployeeQuestions')
 
 let sql = ``;
 let wait = '';
@@ -12,6 +13,9 @@ let currentDepartments = [];
 let resultingArray = [];
 let departmentID = '';
 let splitString = [];
+let inquirerEmployee = [];
+let currentRoles = [];
+let currentManagers = [];
 
 function waitABit() {
     return new Promise(resolve => {
@@ -139,8 +143,88 @@ async function mainMenuFunc () {
             break;
 
         case "Add an Employee":
-            // code block
-            console.log("Add an Employee was called");
+            params = [];
+
+            inquirerEmployee = await inquirer.prompt(createEmployeeQuestions);
+
+            params.push(inquirerEmployee.firstName, inquirerEmployee.lastName);
+
+            currentRoles = [];
+            resultingArray = []; 
+
+            db.query(`SELECT concat(roles.id, ' ', roles.title) AS Roles FROM roles`, (err, rows) => {
+                if (err) {
+                    console.log( `error: ${err.message}`);
+                    return;
+                }
+                
+                
+                resultingArray = Object.values(JSON.parse(JSON.stringify(rows)));
+            })
+            wait = await waitABit();
+
+            for (var i = 0; i < resultingArray.length; i++) {
+                currentRoles.push(resultingArray[i].Roles);
+            }
+
+            let empRole = await inquirer.prompt(
+                [
+                    {
+                        type: 'list',
+                        name: 'employeeRole',
+                        message: "What is the employee's role?",
+                        choices: currentRoles
+                    }
+                ]
+            )
+            // inquirer prompt appears too quickly, need to set artificial delay
+            wait = await waitABit();
+            
+            splitString = empRole.employeeRole.split(' ');
+            let roleID = splitString[0];
+            params.push(roleID)
+
+
+
+            resultingArray = []; 
+            currentManagers = [];
+
+            db.query(`SELECT concat(employee.id, ' ', employee.first_name, ' ', employee.last_name) AS Manager FROM employee`, (err, rows) => {
+                if (err) {
+                    console.log( `error: ${err.message}`);
+                    return;
+                }
+                
+                
+                resultingArray = Object.values(JSON.parse(JSON.stringify(rows)));
+            })
+            wait = await waitABit();
+
+            for (var i = 0; i < resultingArray.length; i++) {
+                currentManagers.push(resultingArray[i].Manager);
+            }
+
+            let employeeManager = await inquirer.prompt(
+                [
+                    {
+                        type: 'list',
+                        name: 'Manager',
+                        message: "Who is the employee's manager?",
+                        choices: currentManagers
+                    }
+                ]
+            )
+            // inquirer prompt appears too quickly, need to set artificial delay
+            wait = await waitABit();
+
+            splitString = employeeManager.Manager.split(' ');
+            let managerID = splitString[0];
+            params.push(managerID)
+            
+            sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?);`
+            
+            parameterQuery(sql, params);
+            wait = await waitABit();
             break;
 
         case "Update Employee Role":
