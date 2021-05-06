@@ -7,6 +7,11 @@ const db = require('./db/connection');
 
 let sql = ``;
 let wait = '';
+let params = [];
+let currentDepartments = [];
+let resultingArray = [];
+let departmentID = '';
+let splitString = [];
 
 function waitABit() {
     return new Promise(resolve => {
@@ -22,6 +27,18 @@ async function simpleQuery(sqlQuery) {
             console.log( `error: ${err.message}`);
             return;
         }
+        console.table(rows);
+    })
+}
+
+async function parameterQuery(sqlQuery, params) {
+    db.query(sqlQuery, params, (err, rows) => {
+        if (err) {
+            console.log( `error: ${err.message}`);
+            return;
+        }
+
+
         console.table(rows);
     })
 }
@@ -65,18 +82,61 @@ async function mainMenuFunc () {
 
         case "Add a Department":
             let inquirerDepartment = await inquirer.prompt(createDepartmentQuestions);
-            console.log(inquirerDepartment);
 
-            sql = `INSERT INTO department (name) VALUES (${inquirerDepartment.departmentName})`
+            sql = `INSERT INTO department (name) VALUES (?);`
+            params = [inquirerDepartment.departmentName];
 
-            await simpleQuery(sql);
+            await parameterQuery(sql, params);
             // inquirer prompt appears too quickly, need to set artificial delay
             wait = await waitABit();
             break;
 
         case "Add a Role":
-            // code block
-            console.log("Add a Role was called");
+            params = [];
+
+            let inquirerRole = await inquirer.prompt(createRoleQuestions);
+
+            params.push(inquirerRole.roleName, inquirerRole.salary);
+            console.log(params);
+
+            currentDepartments = [];
+            resultingArray = []; 
+
+            db.query(`SELECT concat(department.id, ' ', department.name) AS Department FROM department`, (err, rows) => {
+                if (err) {
+                    console.log( `error: ${err.message}`);
+                    return;
+                }
+                
+                
+                resultingArray = Object.values(JSON.parse(JSON.stringify(rows)));
+                console.log(resultingArray[1].Department);
+            })
+            wait = await waitABit();
+
+            for (var i = 0; i < resultingArray.length; i++) {
+                currentDepartments.push(resultingArray[i].Department);
+            }
+
+            let roleDept = await inquirer.prompt(
+                [
+                    {
+                        type: 'list',
+                        name: 'departmentRole',
+                        message: "What is the role's department?",
+                        choices: currentDepartments
+                    }
+                ]
+            )
+            // inquirer prompt appears too quickly, need to set artificial delay
+            wait = await waitABit();
+            
+            splitString = roleDept.departmentRole.split(' ');
+            departmentID = splitString[0];
+
+            params.push(departmentID);
+            sql = `INSERT INTO roles (title, salary, department_id) VALUES (?,?,?);`
+            parameterQuery(sql, params);
             break;
 
         case "Add an Employee":
