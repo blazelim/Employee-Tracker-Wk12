@@ -232,10 +232,10 @@ async function mainMenuFunc () {
             roleID = splitString[0];
             params.push(roleID)
 
-            //
             resultingArray = []; 
             currentEmployees = [];
 
+            //query for getting the names of the rest of the employees
             db.query(`SELECT concat(employee.id, ' ', employee.first_name, ' ', employee.last_name) AS Manager FROM employee`, (err, rows) => {
                 if (err) {
                     console.log( `error: ${err.message}`);
@@ -245,10 +245,12 @@ async function mainMenuFunc () {
             })
             wait = await waitABit();
 
+            // push the list of employees into an array
             for (var i = 0; i < resultingArray.length; i++) {
                 currentEmployees.push(resultingArray[i].Manager);
             }
             
+            // push the list of employees into an array prepared for 
             if (currentEmployees.length != 0) {
                 for (var i = 0; i < currentEmployees.length; i++) {
                     inquirerArray.push(currentEmployees[i])
@@ -269,14 +271,12 @@ async function mainMenuFunc () {
                 )
             // inquirer prompt appears too quickly, need to set artificial delay
             wait = await waitABit();
-            
-            console.log(employeeManager.Manager)
 
+            // obtain manager id from the string 
             splitString = employeeManager.Manager.split(' ');
             managerID = splitString[0];
 
-            console.log(managerID)
-
+            // if statements to create the sql query
             if (managerID === 'None') {
                 sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,NULL);`
             } else {
@@ -284,6 +284,7 @@ async function mainMenuFunc () {
                 sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?);`
             }
             
+            // push the prepared sql statement into the database
             parameterQuery(sql, params);
             wait = await waitABit();
             break;
@@ -295,6 +296,7 @@ async function mainMenuFunc () {
             managerID = '';
             currentRoles = [];
 
+            // db query to get list of employees
             db.query(`SELECT concat(employee.id, ' ', employee.first_name, ' ', employee.last_name) AS EmployeeList FROM employee`, (err, rows) => {
                 if (err) {
                     console.log( `error: ${err.message}`);
@@ -308,6 +310,17 @@ async function mainMenuFunc () {
                 currentEmployees.push(resultingArray[i].EmployeeList);
             }
 
+            // restart loop if there are no employees
+            if (currentEmployees.length = 0) {
+                console.log(`
+                ========================================
+                You have no employees to update!
+                ========================================
+                `);
+                break;
+            }
+
+            // choose which employee to update
             let employeeList = await inquirer.prompt(
                 [
                     {
@@ -324,7 +337,7 @@ async function mainMenuFunc () {
             splitString = employeeList.employee.split(' ');
             let employeeID = splitString[0];
            
-       
+            // query to get list of roles
             db.query(`SELECT concat(roles.id, ' ', roles.title) AS Roles FROM roles`, (err, rows) => {
                 if (err) {
                     console.log( `error: ${err.message}`);
@@ -340,6 +353,7 @@ async function mainMenuFunc () {
                 currentRoles.push(resultingArray[i].Roles);
             }
 
+            // inquirer prompt to ask which role the employee is
             empRole = await inquirer.prompt(
                 [
                     {
