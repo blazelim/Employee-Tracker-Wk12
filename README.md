@@ -5,11 +5,17 @@
 ## Description
 ![Example of a list of employees](./media/sample.png)
 An SQL based application that lets you manage a database of your employees. You can add departments, roles, and new employees. You can view your current departments, current roles, and current employees using the "View All" functions found in the application. Additionally you are able to update employee roles as they change
+
 ## Table of Contents
+* [Video Walkthrough for Installation and Usage](#video-walkthrough-for-installation-and-usage)
 * [Installation](#installation)
 * [Usage](#usage)
 * [License](#license)
 * [Questions](#questions)
+
+## Video Walkthrough for Installation and Usage
+https://drive.google.com/file/d/1z8LlRo4gnBsRPrPWmXzQB8Miedi5pTLS/view?usp=sharing
+
 ## Installation
 In the root directory of the application in your CLI, use the command 'npm install' to install any dependencies.
 
