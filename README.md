@@ -11,6 +11,8 @@ An SQL based application that lets you manage a database of your employees. You 
 * [License](#license)
 * [Questions](#questions)
 ## Installation
+Modify the code in 'db/connections.js". Change the user and password to the username and password of your sql database.
+
 Start the SQL database from your SQL command line. While in the root directory of the application, use the "SOURCE db/db.sql" command to start using the employee database. Additionally, during the FIRST time initializing this application, you must also install the tables into your employee database using the "SOURCE db/schema.sql" command. After that, your application is ready to go!
 
 ## Usage
