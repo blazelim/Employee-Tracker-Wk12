@@ -11,9 +11,12 @@ An SQL based application that lets you manage a database of your employees. You 
 * [License](#license)
 * [Questions](#questions)
 ## Installation
+In the root directory of the application in your CLI, use the command 'npm install' to install any dependencies.
+
 Modify the code in 'db/connections.js". Change the user and password to the username and password of your sql database.
 
 Start the SQL database from your SQL command line. While in the root directory of the application, use the "SOURCE db/db.sql" command to start using the employee database. Additionally, during the FIRST time initializing this application, you must also install the tables into your employee database using the "SOURCE db/schema.sql" command. After that, your application is ready to go!
+
 
 ## Usage
 In your command line in the root directory of the application, use the "node index.js" command
